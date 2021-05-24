@@ -119,8 +119,11 @@ def ExportToDjangoView(request):
         "PROMETHEUS_MULTIPROC_DIR" in os.environ
         or "prometheus_multiproc_dir" in os.environ
     ):
-        registry = prometheus_client.CollectorRegistry()
-        multiprocess.MultiProcessCollector(registry)
+        registry = prometheus_client.CollectorRegistry(auto_describe=True)
+        prometheus_client.PlatformCollector(registry=registry)
+        prometheus_client.GCCollector(registry=registry)
+        prometheus_client.ProcessCollector(registry=registry)
+        multiprocess.MultiProcessCollector(registry=registry)
     else:
         registry = prometheus_client.REGISTRY
     metrics_page = prometheus_client.generate_latest(registry)
